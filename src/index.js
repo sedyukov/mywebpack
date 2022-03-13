@@ -6,6 +6,7 @@ import * as $ from 'jquery';
 import './styles/styles.css'
 import './styles/main.less'
 import './styles/main.scss'
+import './babel.js'
 
 const post = new Post("Webpack Post")
 $('pre').addClass('code').html(post.toString())
