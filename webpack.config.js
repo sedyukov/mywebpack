@@ -5,8 +5,37 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin');
+const {plugins} = require("@babel/preset-env/lib/plugins-compat-data");
+const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const isDev = process.env.NODE_ENV === "development"
+const basePlugins = () => {
+    const base = [
+        new HTMLWebpackPlugin({
+            template: "./index.html",
+            minify: {
+                collapseWhitespace: !isDev
+            }
+        }),
+        new ESLintPlugin(),
+        new CleanWebpackPlugin(),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, 'src/favicon.ico'),
+                    to: path.resolve(__dirname, 'dist')
+                }
+            ]
+        }),
+        new MiniCssExtractPlugin({
+            filename: '[name].[contenthash].css'
+        })
+    ]
+    if (!isDev) {
+        base.push(new BundleAnalyzerPlugin())
+    }
+    return base
 
+}
 const optimization = () => {
     const config = {
         splitChunks: {
@@ -59,27 +88,7 @@ module.exports = {
         hot: isDev
     },
     // devtool: isDev ? 'source-map' : false,
-    plugins: [
-        new HTMLWebpackPlugin({
-            template: "./index.html",
-            minify: {
-                collapseWhitespace: !isDev
-            }
-        }),
-        new ESLintPlugin(),
-        new CleanWebpackPlugin(),
-        new CopyWebpackPlugin({
-            patterns: [
-                    {
-                        from: path.resolve(__dirname, 'src/favicon.ico'),
-                        to: path.resolve(__dirname, 'dist')
-                    }
-                ]
-        }),
-        new MiniCssExtractPlugin({
-            filename: '[name].[contenthash].css'
-        })
-    ]
+    plugins: basePlugins()
     ,
     module: {
         rules: [
