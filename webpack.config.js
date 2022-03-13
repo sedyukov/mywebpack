@@ -4,6 +4,7 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const ESLintPlugin = require('eslint-webpack-plugin');
 const isDev = process.env.NODE_ENV === "development"
 
 const optimization = () => {
@@ -19,6 +20,19 @@ const optimization = () => {
         ]
     }
     return config
+}
+
+const jsLoader = () => {
+    const loaders = [{
+        loader: 'babel-loader',
+        options: {
+            presets: ['@babel/preset-env'],
+        }
+    }]
+    // if (isDev) {
+    //     loaders.push('eslint-loader')
+    // }
+    return loaders
 }
 
 module.exports = {
@@ -44,7 +58,7 @@ module.exports = {
         port: 4200,
         hot: isDev
     },
-    devtool: isDev ? 'source-map' : '',
+    // devtool: isDev ? 'source-map' : false,
     plugins: [
         new HTMLWebpackPlugin({
             template: "./index.html",
@@ -52,6 +66,7 @@ module.exports = {
                 collapseWhitespace: !isDev
             }
         }),
+        new ESLintPlugin(),
         new CleanWebpackPlugin(),
         new CopyWebpackPlugin({
             patterns: [
@@ -71,12 +86,7 @@ module.exports = {
             {
                 test: /\.m?js$/,
                 exclude: /node_modules/,
-                use: {
-                    loader: "babel-loader",
-                    options: {
-                        presets: ['@babel/preset-env'],
-                    }
-                }
+                use: jsLoader()
             },
             {
                 test: /\.ts$/,
