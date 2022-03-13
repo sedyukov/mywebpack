@@ -25,7 +25,7 @@ module.exports = {
     context: path.resolve(__dirname, 'src'),
     mode: 'development',
     entry: {
-        main: ['@babel/polyfill','./index.js'],
+        main: ['@babel/polyfill','./index.jsx'],
         analytics: './analytics.ts',
     },
     output: {
@@ -78,12 +78,22 @@ module.exports = {
                 }
             },
             {
-                test: /\.m?ts$/,
+                test: /\.ts$/,
                 exclude: /node_modules/,
                 use: {
                     loader: "babel-loader",
                     options: {
                         presets: ["@babel/preset-typescript"],
+                    }
+                }
+            },
+            {
+                test: /\.jsx$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: "babel-loader",
+                    options: {
+                        presets: ["@babel/preset-react"],
                     }
                 }
             },
